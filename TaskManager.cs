@@ -1,6 +1,16 @@
 using System;
 
-public class Printer
+public interface IPrintable
+{
+    void Print();
+}
+
+public interface IScannable
+{
+    void Scan();
+}
+
+public class Printer : IPrintable
 {
     public void Print()
     {
@@ -8,7 +18,7 @@ public class Printer
     }
 }
 
-public class Scanner
+public class Scanner : IScannable
 {
     public void Scan()
     {
@@ -16,19 +26,31 @@ public class Scanner
     }
 }
 
-public class TaskManager
+public class PrintScanner : IPrintable, IScannable
 {
-  
-    public void PrintTask(int taskId, Printer printer)
+    public void Print()
     {
-        Console.WriteLine($"Executing Print Task: {taskId}");
-        printer.Print();
+        Console.WriteLine("Printing from print-scanner...");
     }
 
-    public void ScanTask(int taskId, Scanner scanner)
+    public void Scan()
+    {
+        Console.WriteLine("Scanning from print-scanner...");
+    }
+}
+
+public class TaskManager
+{
+    public void PrintTask(int taskId, IPrintable device)
+    {
+        Console.WriteLine($"Executing Print Task: {taskId}");
+        device.Print();
+    }
+
+    public void ScanTask(int taskId, IScannable device)
     {
         Console.WriteLine($"Executing Scan Task: {taskId}");
-        scanner.Scan();
+        device.Scan();
     }
 }
 
@@ -38,10 +60,14 @@ public class Program
     {
         var printer = new Printer();
         var scanner = new Scanner();
+        var printScanner = new PrintScanner();
 
         var scheduler = new TaskManager();
 
         scheduler.PrintTask(101, printer);
         scheduler.ScanTask(102, scanner);
+
+        scheduler.PrintTask(103, printScanner);
+        scheduler.ScanTask(104, printScanner);
     }
 }
